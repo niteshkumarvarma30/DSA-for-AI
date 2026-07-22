@@ -1,0 +1,374 @@
+# Parameters vs. Arguments in Python
+
+While programmers often use these words interchangeably in casual conversation, they actually refer to two distinctly different parts of a function's lifecycle.
+
+---
+
+# 1. Parameters (The Placeholders)
+
+A **parameter** is the variable listed inside the parentheses in the **function definition**.
+
+Think of a parameter as an **empty parking spot with a label**, or an **empty box waiting to be filled**. It defines what the function expects to receive.
+
+### Example
+
+```python
+# Here, 'node' and 'target' are PARAMETERS
+def search_tree(node, target):
+    if not node:
+        return False
+    if node.val == target:
+        return True
+    return search_tree(node.left, target) or search_tree(node.right, target)
+```
+
+### Explanation
+
+- `node` → Parameter
+- `target` → Parameter
+
+These variables **do not contain actual values yet**. They simply describe what inputs the function requires.
+
+---
+
+# 2. Arguments (The Actual Values)
+
+An **argument** is the actual, concrete data value that you pass into the function when you **call (execute)** it.
+
+Think of the argument as the **actual car you park in the spot**, or the **physical item you place into the box**.
+
+### Example
+
+```python
+root_node = TreeNode(5)
+my_target = 10
+
+# Here, 'root_node' and '10' are ARGUMENTS
+found = search_tree(root_node, 10)
+```
+
+### Explanation
+
+During the function call:
+
+- `root_node` → Argument
+- `10` → Argument
+
+The values are assigned like this:
+
+```
+Parameter      ←      Argument
+---------             --------
+node           ←      root_node
+target         ←      10
+```
+
+The function now executes using these actual values.
+
+---
+
+# Visual Example
+
+```python
+def add(a, b):     # Parameters
+    return a + b
+
+result = add(5, 10) # Arguments
+```
+
+```
+Function Definition
+-------------------
+Parameters:
+a
+b
+
+Function Call
+-------------
+Arguments:
+5
+10
+
+Mapping
+-------
+a = 5
+b = 10
+```
+
+---
+
+# Parameters vs Arguments
+
+| Parameters | Arguments |
+|------------|-----------|
+| Declared in the function definition | Passed during the function call |
+| Placeholder variables | Actual values |
+| Define what the function expects | Provide the data the function uses |
+| Exist inside the function definition | Exist when calling the function |
+
+---
+
+# 3. Useful Python Parameter/Argument Types for DSA
+
+When writing algorithms in Python, you will frequently use a few special types of parameters and arguments.
+
+---
+
+## 3.1 Default Parameters
+
+You can give a parameter a **default value**. If the caller doesn't provide an argument for it, the function automatically uses the default.
+
+This is especially useful in **recursive algorithms** like DFS to avoid creating a new empty set or list on every recursive call.
+
+### Example
+
+```python
+# 'visited' is a parameter with a default value of None
+def dfs(node, visited=None):
+    if visited is None:
+        visited = set()
+
+    visited.add(node)
+
+    for neighbor in node.neighbors:
+        if neighbor not in visited:
+            dfs(neighbor, visited)
+```
+
+### Function Calls
+
+```python
+dfs(start_node)
+```
+
+Python internally does:
+
+```
+visited = None
+```
+
+Since it is `None`, the function creates:
+
+```python
+visited = set()
+```
+
+Recursive calls:
+
+```python
+dfs(neighbor, visited)
+```
+
+Now:
+
+- `neighbor` is an argument.
+- `visited` is an argument.
+- The same set is shared across recursive calls.
+
+### Why use `None` instead of `set()`?
+
+Avoid writing:
+
+```python
+def dfs(node, visited=set()):
+```
+
+because mutable default arguments are created **only once**, leading to unexpected behavior.
+
+Using `None` is the recommended Python practice.
+
+---
+
+## 3.2 Keyword Arguments
+
+When calling a function, you can explicitly specify which parameter each argument belongs to.
+
+This:
+
+- improves readability,
+- allows arguments to be passed in any order.
+
+### Example
+
+```python
+def create_grid(rows, cols, default_val):
+    return [[default_val for _ in range(cols)] for _ in range(rows)]
+```
+
+Instead of:
+
+```python
+grid = create_grid(5, 5, -1)
+```
+
+you can write:
+
+```python
+grid = create_grid(default_val=-1, rows=5, cols=5)
+```
+
+### Mapping
+
+```
+rows        ← 5
+cols        ← 5
+default_val ← -1
+```
+
+Even though the order changed, Python correctly matches arguments by name.
+
+---
+
+## 3.3 *args (Variable Positional Arguments)
+
+Sometimes you don't know how many positional arguments will be passed to a function.
+
+`*args` allows the function to accept **any number of positional arguments**.
+
+Python collects them into a **tuple**.
+
+### Example
+
+```python
+def print_nodes(*args):
+    for node in args:
+        print(node.val)
+```
+
+Calling:
+
+```python
+print_nodes(node1, node2, node3)
+```
+
+Internally:
+
+```python
+args = (node1, node2, node3)
+```
+
+So the loop becomes:
+
+```python
+for node in (node1, node2, node3):
+    print(node.val)
+```
+
+You can pass any number of arguments:
+
+```python
+print_nodes(node1)
+
+print_nodes(node1, node2)
+
+print_nodes(node1, node2, node3, node4, node5)
+```
+
+---
+
+## 3.4 **kwargs (Variable Keyword Arguments)
+
+`**kwargs` allows a function to accept **any number of keyword arguments**.
+
+Python stores them inside a **dictionary**.
+
+### Example
+
+```python
+def print_student(**kwargs):
+    for key, value in kwargs.items():
+        print(key, value)
+```
+
+Calling:
+
+```python
+print_student(name="Alice", age=20, grade="A")
+```
+
+Internally:
+
+```python
+kwargs = {
+    "name": "Alice",
+    "age": 20,
+    "grade": "A"
+}
+```
+
+The loop prints:
+
+```
+name Alice
+age 20
+grade A
+```
+
+---
+
+# Summary
+
+| Concept | Meaning |
+|---------|---------|
+| Parameter | Placeholder variable in the function definition |
+| Argument | Actual value passed during the function call |
+| Default Parameter | Uses a predefined value if no argument is supplied |
+| Keyword Argument | Matches arguments using parameter names |
+| *args | Accepts any number of positional arguments (tuple) |
+| **kwargs | Accepts any number of keyword arguments (dictionary) |
+
+---
+
+# Quick Interview Question
+
+### Q1. What is the difference between parameters and arguments?
+
+**Answer:**
+
+- Parameters are variables defined in a function declaration.
+- Arguments are the actual values supplied when calling the function.
+
+Example:
+
+```python
+def add(a, b):   # Parameters
+    return a + b
+
+add(5, 10)       # Arguments
+```
+
+---
+
+### Q2. Why use `visited=None` instead of `visited=set()`?
+
+Because mutable default arguments are created **only once** when the function is defined. This causes the same object to be reused across multiple calls.
+
+Using:
+
+```python
+visited=None
+```
+
+creates a fresh set whenever needed, preventing unexpected bugs.
+
+---
+
+### Q3. What is the difference between `*args` and `**kwargs`?
+
+| `*args` | `**kwargs` |
+|----------|------------|
+| Variable positional arguments | Variable keyword arguments |
+| Stored as a tuple | Stored as a dictionary |
+| Example: `(1, 2, 3)` | Example: `{"name":"Alice"}` |
+
+---
+
+# Key Takeaways
+
+- **Parameters** are placeholders in a function definition.
+- **Arguments** are the actual values supplied during a function call.
+- **Default parameters** simplify function calls and are especially useful in recursion.
+- **Keyword arguments** improve readability and allow arguments to be passed in any order.
+- **`*args`** accepts a variable number of positional arguments as a tuple.
+- **`**kwargs`** accepts a variable number of keyword arguments as a dictionary.
+- Understanding these concepts is essential for writing clean, flexible, and reusable Python functions, especially in Data Structures & Algorithms (DSA).
