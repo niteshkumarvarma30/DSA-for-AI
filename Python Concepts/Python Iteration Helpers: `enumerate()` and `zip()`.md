@@ -108,11 +108,3 @@ for l, n in zip(letters, numbers):
 
 ---
 
-## Pro-Tip for DSA
-
-`zip()` is perfect for comparing adjacent elements. For example, if you want to compare `nums[i]` with `nums[i+1]`, you can zip the list with a shifted version of itself:
-
-```python
-for current, next_val in zip(nums, nums[1:]):
-    ...
-```
